@@ -2,19 +2,21 @@ pipeline {
     agent any
 
     stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/alisoncc/helloWorld.git'
+            }
+        }
+
         stage('Build') {
             steps {
-                echo 'Building..'
+                sh 'mvn clean package'
             }
         }
-        stage('Test') {
-            steps {
-                echo 'Testing..'
-            }
-        }
+
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                sh 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar &'
             }
         }
     }
