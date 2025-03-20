@@ -7,7 +7,6 @@ pipeline {
             steps {
                 script {
                     git branch: 'main',
-                        #! credentialsId: 'Credential ID',
                         url: 'https://github.com/alisoncc/helloWorld.git'
                 }
             }
