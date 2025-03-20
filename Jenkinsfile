@@ -1,6 +1,7 @@
 #!/usr/bin/env groovy
 pipeline {
     agent any
+    env.UNIX = isUnix()
 
     stages {
         stage('Checkout') {
@@ -17,8 +18,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build start..'
-                echo 'Build..'
-                sh 'mvn clean package'
+                if (Boolean.valueOf(env.UNIX)) {
+                    sh 'mvn clean package'
+                }
+                else {
+                    echo 'bat..'
+                    bat 'mvn clean package'
+                }
+
                 echo 'Build end..'
             }
         }
@@ -26,8 +33,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploy start..'
-                echo 'Deploy..'
-                sh 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar &'
+                if (Boolean.valueOf(env.UNIX)) {
+                    sh 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar &'
+                }
+                else {
+                    echo 'bat..'
+                    bat 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar '
+                }
                 echo 'Deploy end..'
             }
         }
