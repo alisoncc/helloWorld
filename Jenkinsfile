@@ -1,7 +1,6 @@
 #!/usr/bin/env groovy
 pipeline {
     agent any
-    env.UNIX = isUnix()
 
     stages {
         stage('Checkout') {
@@ -9,7 +8,7 @@ pipeline {
                 echo 'Checkout start..'
                 script {
                     git branch: 'main',
-                        url: 'https://github.com/alisoncc/helloWorld.git'
+                            url: 'https://github.com/alisoncc/helloWorld.git'
                 }
                 echo 'Checkout end..'
             }
@@ -18,14 +17,14 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build start..'
-                if (Boolean.valueOf(env.UNIX)) {
-                    sh 'mvn clean package'
+                script {
+                    if (isUnix()) {
+                        sh 'mvn clean package'
+                    } else {
+                        echo 'bat..'
+                        bat 'mvn clean package'
+                    }
                 }
-                else {
-                    echo 'bat..'
-                    bat 'mvn clean package'
-                }
-
                 echo 'Build end..'
             }
         }
@@ -33,12 +32,13 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploy start..'
-                if (Boolean.valueOf(env.UNIX)) {
-                    sh 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar &'
-                }
-                else {
-                    echo 'bat..'
-                    bat 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar '
+                script {
+                    if (isUnix()) {
+                        sh 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar &'
+                    } else {
+                        echo 'bat..'
+                        bat 'java -jar target/helloworld-0.0.1-SNAPSHOT.jar'
+                    }
                 }
                 echo 'Deploy end..'
             }
