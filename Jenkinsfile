@@ -14,6 +14,20 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            steps {
+                echo 'Build start..'
+                script {
+                    if (isUnix()) {
+                        sh 'mvn clean package'
+                    } else {
+                        echo 'bat..'
+                        bat 'mvn clean package'
+                    }
+                }
+                echo 'Build end..'
+            }
+        }
 
         stage('Deploy') {
             steps {
