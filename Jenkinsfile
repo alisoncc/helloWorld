@@ -1,10 +1,15 @@
+#!/usr/bin/env groovy
 pipeline {
     agent any
 
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/alisoncc/helloWorld.git'
+                script {
+                    git branch: 'main',
+                        #! credentialsId: 'Credential ID',
+                        url: 'https://github.com/alisoncc/helloWorld.git'
+                }
             }
         }
 
