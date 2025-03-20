@@ -34,14 +34,20 @@ pipeline {
                 echo 'Deploy start..'
                 script {
                     if (isUnix()) {
-                        // 将日志输出到文件，并在后台运行
                         sh 'nohup java -jar target/helloworld-0.0.1-SNAPSHOT.jar > app.log 2>&1 &'
-                        // 等待 Spring Boot 启动完成（例如等待 10 秒）
-                        sh 'sleep 10'
+                        // 检查端口是否启动
+                        sh '''
+                    while ! nc -z localhost 8080; do
+                        sleep 1
+                    done
+                '''
                     } else {
                         echo 'bat..'
-                        // Windows 下直接运行，日志输出到文件
                         bat 'start /B java -jar target/helloworld-0.0.1-SNAPSHOT.jar > app.log 2>&1'
+                        // Windows 下可以使用 PowerShell 检查端口
+                        bat '''
+                    powershell -Command "while (!(Test-NetConnection -ComputerName localhost -Port 8080).TcpTestSucceeded) { Start-Sleep -Seconds 1 }"
+                '''
                     }
                 }
                 echo 'Deploy end..'
